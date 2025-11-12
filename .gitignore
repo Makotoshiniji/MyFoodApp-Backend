@@ -3,4 +3,11 @@
 [Bb]in/
 [Oo]bj/
 *.user
-*.suo 
+*.suo
+
+# Project files
+Properties/launchSettings.json
+appsettings.Development.json
+
+# User Uploads
+shop_uploads/
