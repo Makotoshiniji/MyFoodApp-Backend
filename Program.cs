@@ -1,7 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using My_FoodApp.Data;
+using My_FoodApp.Services;
+// ⭐️⭐️ 2 บรรทัดนี้คือตัวแก้ Error CS1061 ครับ ⭐️⭐️
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Pomelo.EntityFrameworkCore.MySql.Storage;
+using QuestPDF.Infrastructure;
 using System.Text.Json.Serialization;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +17,15 @@ var builder = WebApplication.CreateBuilder(args);
 var conn = builder.Configuration.GetConnectionString("Default")
            ?? throw new InvalidOperationException("Connection string 'Default' not found.");
 
-builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseMySql(conn, ServerVersion.AutoDetect(conn)));
+// ⭐️ (ดูจาก db_my_foodapp.sql คุณใช้ MariaDB 10.4.32)
+var serverVersion = new MariaDbServerVersion(new Version(10, 4, 32));
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseMySql(conn, serverVersion);
+    options.UseSnakeCaseNamingConvention(); // ✅ ต้องอยู่ตรงนี้ (บรรทัดแยกออกมา)
+    options.EnableSensitiveDataLogging();
+});
 
 // ======================================
 // 🔹 CORS Policy (สำหรับ React Native)
@@ -30,11 +43,7 @@ builder.Services.AddCors(o => o.AddPolicy(corsPolicy, p =>
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // ✅ แก้ปัญหา Serialization Loop เช่น Cart.Items.Cart.Items...
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-
-        // (optional) จัดรูปแบบ JSON ให้สวยเวลา debug
-        // options.JsonSerializerOptions.WriteIndented = true;
     });
 
 // ======================================
@@ -42,6 +51,8 @@ builder.Services.AddControllers()
 // ======================================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+QuestPDF.Settings.License = LicenseType.Community;
+builder.Services.AddTransient<EmailService>();
 
 var app = builder.Build();
 

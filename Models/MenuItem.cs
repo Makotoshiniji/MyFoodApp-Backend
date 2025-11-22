@@ -30,6 +30,8 @@ namespace My_FoodApp.Models
         // ชื่อไฟล์รูป เช่น "1_1.png"
         public string? MainPhotoUrl { get; set; }
 
+        public string? Type { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }

@@ -93,11 +93,11 @@ namespace My_FoodApp.Controllers
                 cart = new Cart
                 {
                     UserId = userId,
-                    ShopId = menu.ShopId,
+                    ShopId = menu.ShopId, // ผูกกับร้านของเมนูนั้น
                     CreatedAt = DateTime.UtcNow
                 };
-
                 _db.Cart.Add(cart);
+                await _db.SaveChangesAsync(); // Save ก่อนเพื่อให้ได้ cart.Id
             }
 
             var allMenuOptions = await _db.MenuOptions
@@ -140,29 +140,26 @@ namespace My_FoodApp.Controllers
         [HttpGet("user/{userId:int}")]
         public async Task<ActionResult<IEnumerable<CartShopSummaryDto>>> GetUserCarts(int userId)
         {
+
+            //return Ok(result);
             var carts = await _db.Cart
                 .Where(c => c.UserId == userId)
-                .Include(c => c.Items)
-                    .ThenInclude(i => i.Options)
-                .Include(c => c.Items)
-                    .ThenInclude(i => i.MenuItem)
+                .Include(c => c.Items).ThenInclude(i => i.Options)
+                .Include(c => c.Items).ThenInclude(i => i.MenuItem)
                 .ToListAsync();
 
+            // ดึงชื่อร้านมาแมพใส่
             var shopIds = carts.Select(c => c.ShopId).Distinct().ToList();
-            var shops = await _db.Shops
-                .Where(s => shopIds.Contains(s.Id))
-                .ToDictionaryAsync(s => s.Id, s => s.Name);
+            var shops = await _db.Shops.Where(s => shopIds.Contains(s.Id)).ToDictionaryAsync(s => s.Id, s => s.Name);
 
             var result = carts.Select(c => new CartShopSummaryDto
             {
                 CartId = c.Id,
                 ShopId = c.ShopId ?? 0,
-                ShopName = c.ShopId.HasValue && shops.ContainsKey(c.ShopId.Value)
-                    ? shops[c.ShopId.Value]
-                    : "Unknown shop",
+                // ใส่ชื่อร้าน (ถ้าหาไม่เจอให้ใส่ Unknown)
+                ShopName = (c.ShopId.HasValue && shops.ContainsKey(c.ShopId.Value)) ? shops[c.ShopId.Value] : "Unknown Shop",
                 ItemCount = c.Items.Sum(i => i.Qty),
-                Total = c.Items.Sum(i =>
-                    i.Qty * (i.UnitPrice + i.Options.Sum(o => o.ExtraPrice)))
+                Total = c.Items.Sum(i => i.Qty * (i.UnitPrice + i.Options.Sum(o => o.ExtraPrice)))
             });
 
             return Ok(result);

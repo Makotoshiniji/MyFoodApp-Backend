@@ -1,25 +1,29 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 
-namespace My_FoodApp.Data   // <- ปรับให้ตรง
+namespace My_FoodApp.Data
 {
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         public AppDbContext CreateDbContext(string[] args)
         {
-            var cfg = new ConfigurationBuilder()
+            // 1. อ่าน Config จาก appsettings.json
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile("appsettings.Development.json", optional: true)
+                .AddJsonFile("appsettings.json")
                 .Build();
 
-            var conn = cfg.GetConnectionString("Default");
-            var opts = new DbContextOptionsBuilder<AppDbContext>()
-                .UseMySql(conn, ServerVersion.AutoDetect(conn))
-                .Options;
+            // 2. สร้างตัวสร้าง Options
+            var builder = new DbContextOptionsBuilder<AppDbContext>();
+            var connectionString = configuration.GetConnectionString("Default");
 
-            return new AppDbContext(opts);
+            // 3. ตั้งค่า Database และ ✅ ใส่ Snake Case ตรงนี้ด้วย!
+            builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+                   .UseSnakeCaseNamingConvention(); // 👈 บรรทัดสำคัญที่ขาดหายไป!
+
+            return new AppDbContext(builder.Options);
         }
     }
 }

@@ -17,542 +17,972 @@ namespace My_FoodApp.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.10")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("MenuItemOptionGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("GroupId");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("IsRequired");
+
+                    b.Property<int>("MaxSelection")
+                        .HasColumnType("int")
+                        .HasColumnName("MaxSelection");
+
+                    b.Property<int>("MenuItemId")
+                        .HasColumnType("int")
+                        .HasColumnName("MenuItemId");
+
+                    b.Property<int?>("MenuOptionGroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("menu_option_group_id");
+
+                    b.Property<int>("MinSelection")
+                        .HasColumnType("int")
+                        .HasColumnName("MinSelection");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("SortOrder");
+
+                    b.HasKey("Id")
+                        .HasName("pk_menu_item_option_groups");
+
+                    b.HasIndex("MenuItemId")
+                        .HasDatabaseName("ix_menu_item_option_groups_menu_item_id");
+
+                    b.HasIndex("MenuOptionGroupId")
+                        .HasDatabaseName("ix_menu_item_option_groups_menu_option_group_id");
+
+                    b.ToTable("menu_item_option_groups", (string)null);
+                });
+
+            modelBuilder.Entity("My_FoodApp.Models.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<int?>("ShopId")
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cart");
+
+                    b.ToTable("cart", (string)null);
+                });
+
+            modelBuilder.Entity("My_FoodApp.Models.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int")
+                        .HasColumnName("cart_id");
+
+                    b.Property<int>("MenuItemId")
+                        .HasColumnType("int")
+                        .HasColumnName("menu_item_id");
+
+                    b.Property<int>("Qty")
+                        .HasColumnType("int")
+                        .HasColumnName("qty");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("price");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cart_items");
+
+                    b.HasIndex("CartId")
+                        .HasDatabaseName("ix_cart_items_cart_id");
+
+                    b.HasIndex("MenuItemId")
+                        .HasDatabaseName("ix_cart_items_menu_item_id");
+
+                    b.ToTable("cart_items", (string)null);
+                });
+
+            modelBuilder.Entity("My_FoodApp.Models.CartItemOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartItemId")
+                        .HasColumnType("int")
+                        .HasColumnName("cart_item_id");
+
+                    b.Property<decimal>("ExtraPrice")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("extra_price");
+
+                    b.Property<int>("OptionId")
+                        .HasColumnType("int")
+                        .HasColumnName("option_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cart_item_options");
+
+                    b.HasIndex("CartItemId")
+                        .HasDatabaseName("ix_cart_item_options_cart_item_id");
+
+                    b.ToTable("cart_item_options", (string)null);
+                });
 
             modelBuilder.Entity("My_FoodApp.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("name");
 
                     b.Property<int>("ShopId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id");
 
                     b.Property<int>("SortOrder")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("sort_order");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_categories");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ShopId")
+                        .HasDatabaseName("ix_categories_shop_id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("categories", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.Coupon", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("code");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("description");
 
                     b.Property<string>("DiscountType")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("discount_type");
 
                     b.Property<decimal>("DiscountValue")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("discount_value");
 
                     b.Property<DateTime?>("EndsAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("ends_at");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_active");
 
                     b.Property<decimal?>("MaxDiscount")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("max_discount");
 
                     b.Property<decimal>("MinSubtotal")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("min_subtotal");
 
                     b.Property<int>("ShopId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id");
 
                     b.Property<DateTime?>("StartsAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("starts_at");
 
                     b.Property<int?>("UsageLimit")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("usage_limit");
 
                     b.Property<int>("UsedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("used_count");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_coupons");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ShopId")
+                        .HasDatabaseName("ix_coupons_shop_id");
 
-                    b.ToTable("Coupons");
+                    b.ToTable("coupons", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.Ingredient", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("name");
 
                     b.Property<decimal>("SafetyStock")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("safety_stock");
 
                     b.Property<int>("ShopId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id");
 
                     b.Property<string>("Unit")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("unit");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_ingredients");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ShopId")
+                        .HasDatabaseName("ix_ingredients_shop_id");
 
-                    b.ToTable("Ingredients");
+                    b.ToTable("ingredients", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.Inventory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("IngredientId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ingredient_id");
 
                     b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("quantity");
 
                     b.Property<int>("ShopId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_inventory");
 
-                    b.HasIndex("IngredientId");
+                    b.HasIndex("IngredientId")
+                        .HasDatabaseName("ix_inventory_ingredient_id");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ShopId")
+                        .HasDatabaseName("ix_inventory_shop_id");
 
-                    b.ToTable("Inventory");
+                    b.ToTable("inventory", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.MenuItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal?>("BaseCost")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("base_cost");
 
                     b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("category_id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("description");
 
                     b.Property<bool>("IsAvailable")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_available");
 
                     b.Property<string>("MainPhotoUrl")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("main_photo_url");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("name");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("price");
 
                     b.Property<int>("ShopId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_menu_items");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_menu_items_category_id");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ShopId")
+                        .HasDatabaseName("ix_menu_items_shop_id");
 
-                    b.ToTable("MenuItems");
+                    b.ToTable("menu_items", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.MenuItemIngredient", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("IngredientId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ingredient_id");
 
                     b.Property<int>("MenuItemId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("menu_item_id");
 
                     b.Property<decimal>("QtyPerUnit")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("qty_per_unit");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_menu_item_ingredients");
 
-                    b.HasIndex("IngredientId");
+                    b.HasIndex("IngredientId")
+                        .HasDatabaseName("ix_menu_item_ingredients_ingredient_id");
 
-                    b.HasIndex("MenuItemId");
+                    b.HasIndex("MenuItemId")
+                        .HasDatabaseName("ix_menu_item_ingredients_menu_item_id");
 
-                    b.ToTable("MenuItemIngredients");
+                    b.ToTable("menu_item_ingredients", (string)null);
                 });
 
-            modelBuilder.Entity("My_FoodApp.Models.MenuItemMedia", b =>
+            modelBuilder.Entity("My_FoodApp.Models.MenuOption", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("ExtraPrice")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("ExtraPrice");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("GroupId");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("IsDefault");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("Name");
+
+                    b.Property<int?>("MenuOptionGroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("menu_option_group_id");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("SortOrder");
+
+                    b.HasKey("Id")
+                        .HasName("pk_menu_options");
+
+                    b.HasIndex("GroupId")
+                        .HasDatabaseName("ix_menu_options_group_id");
+
+                    b.HasIndex("MenuOptionGroupId")
+                        .HasDatabaseName("ix_menu_options_menu_option_group_id");
+
+                    b.ToTable("menu_options", (string)null);
+                });
+
+            modelBuilder.Entity("My_FoodApp.Models.MenuOptionGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
-                    b.Property<int>("MenuItemId")
-                        .HasColumnType("int");
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("description");
 
-                    b.Property<string>("Purpose")
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_required");
+
+                    b.Property<int>("MaxSelect")
+                        .HasColumnType("int")
+                        .HasColumnName("max_select");
+
+                    b.Property<int>("MinSelect")
+                        .HasColumnType("int")
+                        .HasColumnName("min_select");
+
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("name");
 
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
 
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.HasKey("Id")
+                        .HasName("pk_menu_option_groups");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("MenuItemId");
-
-                    b.ToTable("MenuItemMedia");
+                    b.ToTable("menu_option_groups", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("DeliveryFee")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("delivery_fee");
 
                     b.Property<decimal>("DiscountTotal")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("discount_total");
 
                     b.Property<decimal>("GrandTotal")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("grand_total");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("notes");
 
                     b.Property<string>("OrderCode")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("order_code");
 
                     b.Property<DateTime>("PlacedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("placed_at");
 
                     b.Property<int>("ShopId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("status");
 
                     b.Property<decimal>("Subtotal")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("subtotal");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_orders");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ShopId")
+                        .HasDatabaseName("ix_orders_shop_id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_orders_user_id");
 
-                    b.ToTable("Orders");
+                    b.ToTable("orders", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ItemName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("item_name");
 
                     b.Property<decimal>("LineTotal")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("line_total");
 
                     b.Property<int>("MenuItemId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("menu_item_id");
 
                     b.Property<int>("OrderId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("order_id");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("quantity");
 
                     b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("unit_price");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_order_items");
 
-                    b.HasIndex("MenuItemId");
+                    b.HasIndex("MenuItemId")
+                        .HasDatabaseName("ix_order_items_menu_item_id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_order_items_order_id");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("order_items", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("amount");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Method")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("method");
 
                     b.Property<int>("OrderId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("order_id");
 
                     b.Property<DateTime?>("PaidAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("paid_at");
+
+                    b.Property<string>("SlipImagePath")
+                        .HasColumnType("longtext")
+                        .HasColumnName("slip_image_path");
+
+                    b.Property<DateTime?>("SlipUploadedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("slip_uploaded_at");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("status");
 
                     b.Property<string>("TxnRef")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("txn_ref");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_payments");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_payments_order_id");
 
-                    b.ToTable("Payments");
+                    b.ToTable("payments", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.Shop", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<TimeSpan?>("CloseTime")
-                        .HasColumnType("time(6)");
+                        .HasColumnType("time(6)")
+                        .HasColumnName("close_time");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("description");
 
                     b.Property<bool>("IsOpen")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_open");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("name");
 
                     b.Property<TimeSpan?>("OpenTime")
-                        .HasColumnType("time(6)");
+                        .HasColumnType("time(6)")
+                        .HasColumnName("open_time");
 
                     b.Property<int?>("OwnerUserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("owner_user_id");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("phone");
 
                     b.Property<decimal>("RatingAvg")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(65,30)")
+                        .HasColumnName("rating_avg");
 
                     b.Property<int>("RatingCount")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("rating_count");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_shops");
 
-                    b.ToTable("Shops");
+                    b.ToTable("shops", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.ShopMedia", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("MediaType")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("kind");
 
                     b.Property<int>("ShopId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id");
+
+                    b.Property<int?>("ShopId1")
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id1");
 
                     b.Property<int>("SortOrder")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("sort_order");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("url");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_shop_media");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ShopId")
+                        .HasDatabaseName("ix_shop_media_shop_id");
 
-                    b.ToTable("ShopMedia");
+                    b.HasIndex("ShopId1")
+                        .HasDatabaseName("ix_shop_media_shop_id1");
+
+                    b.ToTable("shop_media", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.ShopRating", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("comment");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<int?>("OrderId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("order_id");
 
                     b.Property<string>("PhotosJson")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("photos_json");
 
                     b.Property<int>("Rating")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("rating");
 
                     b.Property<int>("ShopId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("shop_id");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_shop_ratings");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_shop_ratings_order_id");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ShopId")
+                        .HasDatabaseName("ix_shop_ratings_shop_id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_shop_ratings_user_id");
 
-                    b.ToTable("ShopRatings");
+                    b.ToTable("shop_ratings", (string)null);
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Email")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("email");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("password_hash");
+
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("longtext")
+                        .HasColumnName("password_reset_token");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpires")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("password_reset_token_expires");
 
                     b.Property<string>("Rank")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("rank");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("username");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
 
-                    b.ToTable("Users");
+                    b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("MenuItemOptionGroup", b =>
+                {
+                    b.HasOne("My_FoodApp.Models.MenuItem", "MenuItem")
+                        .WithMany("OptionGroups")
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_menu_item_option_groups_menu_items_menu_item_id");
+
+                    b.HasOne("My_FoodApp.Models.MenuOptionGroup", null)
+                        .WithMany("MenuItems")
+                        .HasForeignKey("MenuOptionGroupId")
+                        .HasConstraintName("fk_menu_item_option_groups_menu_option_groups_menu_option_group");
+
+                    b.Navigation("MenuItem");
+                });
+
+            modelBuilder.Entity("My_FoodApp.Models.CartItem", b =>
+                {
+                    b.HasOne("My_FoodApp.Models.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_cart_items_cart_cart_id");
+
+                    b.HasOne("My_FoodApp.Models.MenuItem", "MenuItem")
+                        .WithMany()
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_cart_items_menu_items_menu_item_id");
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("MenuItem");
+                });
+
+            modelBuilder.Entity("My_FoodApp.Models.CartItemOption", b =>
+                {
+                    b.HasOne("My_FoodApp.Models.CartItem", "CartItem")
+                        .WithMany("Options")
+                        .HasForeignKey("CartItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_cart_item_options_cart_items_cart_item_id");
+
+                    b.Navigation("CartItem");
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.Category", b =>
@@ -561,7 +991,8 @@ namespace My_FoodApp.Migrations
                         .WithMany("Categories")
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_categories_shops_shop_id");
 
                     b.Navigation("Shop");
                 });
@@ -572,7 +1003,8 @@ namespace My_FoodApp.Migrations
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_coupons_shops_shop_id");
 
                     b.Navigation("Shop");
                 });
@@ -583,7 +1015,8 @@ namespace My_FoodApp.Migrations
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_ingredients_shops_shop_id");
 
                     b.Navigation("Shop");
                 });
@@ -594,13 +1027,15 @@ namespace My_FoodApp.Migrations
                         .WithMany()
                         .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_inventory_ingredients_ingredient_id");
 
                     b.HasOne("My_FoodApp.Models.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_inventory_shops_shop_id");
 
                     b.Navigation("Ingredient");
 
@@ -609,17 +1044,17 @@ namespace My_FoodApp.Migrations
 
             modelBuilder.Entity("My_FoodApp.Models.MenuItem", b =>
                 {
-                    b.HasOne("My_FoodApp.Models.Category", "Category")
+                    b.HasOne("My_FoodApp.Models.Category", null)
                         .WithMany("MenuItems")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .HasConstraintName("fk_menu_items_categories_category_id");
 
                     b.HasOne("My_FoodApp.Models.Shop", "Shop")
                         .WithMany("MenuItems")
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
+                        .IsRequired()
+                        .HasConstraintName("fk_menu_items_shops_shop_id");
 
                     b.Navigation("Shop");
                 });
@@ -630,28 +1065,36 @@ namespace My_FoodApp.Migrations
                         .WithMany()
                         .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_menu_item_ingredients_ingredients_ingredient_id");
 
                     b.HasOne("My_FoodApp.Models.MenuItem", "MenuItem")
                         .WithMany()
                         .HasForeignKey("MenuItemId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_menu_item_ingredients_menu_items_menu_item_id");
 
                     b.Navigation("Ingredient");
 
                     b.Navigation("MenuItem");
                 });
 
-            modelBuilder.Entity("My_FoodApp.Models.MenuItemMedia", b =>
+            modelBuilder.Entity("My_FoodApp.Models.MenuOption", b =>
                 {
-                    b.HasOne("My_FoodApp.Models.MenuItem", "MenuItem")
-                        .WithMany("MenuItemMedia")
-                        .HasForeignKey("MenuItemId")
+                    b.HasOne("MenuItemOptionGroup", "Group")
+                        .WithMany("Options")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_menu_options_menu_item_option_groups_group_id");
 
-                    b.Navigation("MenuItem");
+                    b.HasOne("My_FoodApp.Models.MenuOptionGroup", null)
+                        .WithMany("Options")
+                        .HasForeignKey("MenuOptionGroupId")
+                        .HasConstraintName("fk_menu_options_menu_option_groups_menu_option_group_id");
+
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.Order", b =>
@@ -660,13 +1103,15 @@ namespace My_FoodApp.Migrations
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_orders_shops_shop_id");
 
                     b.HasOne("My_FoodApp.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_orders_users_user_id");
 
                     b.Navigation("Shop");
 
@@ -679,13 +1124,15 @@ namespace My_FoodApp.Migrations
                         .WithMany()
                         .HasForeignKey("MenuItemId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_order_items_menu_items_menu_item_id");
 
                     b.HasOne("My_FoodApp.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_order_items_orders_order_id");
 
                     b.Navigation("MenuItem");
 
@@ -698,7 +1145,8 @@ namespace My_FoodApp.Migrations
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_payments_orders_order_id");
 
                     b.Navigation("Order");
                 });
@@ -706,10 +1154,16 @@ namespace My_FoodApp.Migrations
             modelBuilder.Entity("My_FoodApp.Models.ShopMedia", b =>
                 {
                     b.HasOne("My_FoodApp.Models.Shop", "Shop")
-                        .WithMany()
+                        .WithMany("Media")
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_shop_media_shops_shop_id");
+
+                    b.HasOne("My_FoodApp.Models.Shop", null)
+                        .WithMany("ShopMedia")
+                        .HasForeignKey("ShopId1")
+                        .HasConstraintName("fk_shop_media_shops_shop_id1");
 
                     b.Navigation("Shop");
                 });
@@ -718,25 +1172,43 @@ namespace My_FoodApp.Migrations
                 {
                     b.HasOne("My_FoodApp.Models.Order", "Order")
                         .WithMany()
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderId")
+                        .HasConstraintName("fk_shop_ratings_orders_order_id");
 
                     b.HasOne("My_FoodApp.Models.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_shop_ratings_shops_shop_id");
 
                     b.HasOne("My_FoodApp.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_shop_ratings_users_user_id");
 
                     b.Navigation("Order");
 
                     b.Navigation("Shop");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MenuItemOptionGroup", b =>
+                {
+                    b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("My_FoodApp.Models.Cart", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("My_FoodApp.Models.CartItem", b =>
+                {
+                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.Category", b =>
@@ -746,7 +1218,14 @@ namespace My_FoodApp.Migrations
 
             modelBuilder.Entity("My_FoodApp.Models.MenuItem", b =>
                 {
-                    b.Navigation("MenuItemMedia");
+                    b.Navigation("OptionGroups");
+                });
+
+            modelBuilder.Entity("My_FoodApp.Models.MenuOptionGroup", b =>
+                {
+                    b.Navigation("MenuItems");
+
+                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.Order", b =>
@@ -758,7 +1237,11 @@ namespace My_FoodApp.Migrations
                 {
                     b.Navigation("Categories");
 
+                    b.Navigation("Media");
+
                     b.Navigation("MenuItems");
+
+                    b.Navigation("ShopMedia");
                 });
 #pragma warning restore 612, 618
         }

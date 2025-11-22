@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿//PaymentsController.cs
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using My_FoodApp.Data;
 using My_FoodApp.Models;
 using My_FoodApp.Dtos; // 👈 import DTO
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -171,7 +175,107 @@ public class PaymentsController : ControllerBase
         });
     }
 
+    // ❗️❗️ นี่คือ Endpoint ใหม่สำหรับสร้าง PDF (เวอร์ชันแก้ไขแล้ว) ❗️❗️
+    [HttpGet("download-bill/{orderId:int}")] // ❗️ แก้ Route เป็น int
+    public async Task<IActionResult> DownloadBill(int orderId)
+    {
+        // 1. ดึงข้อมูลบิล (แก้ _context เป็น _db)
+        // ❗️ แก้ Include ให้ตรงกับโมเดลของคุณ
+        var bill = await _db.Orders
+            .Include(o => o.Shop)
+            .Include(o => o.OrderItems) // ❗️❗️ แก้จาก Items เป็น OrderItems
+            .FirstOrDefaultAsync(o => o.Id == orderId);
 
+        if (bill == null)
+        {
+            return NotFound("ไม่พบบิลนี้");
+        }
+
+        // ❗️❗️ 1. เพิ่มการดึงข้อมูล User ❗️❗️
+        var user = await _db.Users.FindAsync(bill.UserId);
+        // (❗️ ถ้า property ใน User model ของคุณชื่อ "Name" หรือ "FullName" ให้แก้ตรงนี้)
+        var userName = user?.Username ?? "N/A";
+
+        // 2. ใช้ QuestPDF สร้างเอกสาร
+        var document = Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                // ตั้งค่าหน้ากระดาษ
+                page.Size(PageSizes.A4);
+                page.Margin(2, Unit.Centimetre);
+                page.DefaultTextStyle(style => style.FontSize(12));
+                // ❗️ แนะนำ: เพิ่ม .FontFamily("Sarabun") ถ้าคุณติดตั้งฟอนต์ภาษาไทย
+
+                // 2.1 ส่วนหัว
+                page.Header().AlignCenter().Text("ใบเสร็จการสั่งซื้อ")
+                    .SemiBold().FontSize(20).FontColor(Colors.Purple.Medium);
+
+                // 2.2 ส่วนเนื้อหา
+                page.Content().Column(col =>
+                {
+                    col.Spacing(20); // ระยะห่างระหว่างบล็อก
+
+                    // ข้อมูลบิล (❗️ แก้ไข Property ให้ถูกต้อง)
+                    col.Item().Row(row =>
+                    {
+                        row.RelativeColumn().Column(c =>
+                        {
+                            c.Item().Text($"รหัสคำสั่งซื้อ: {bill.OrderCode}");
+                            // ❗️❗️ สมมติว่า Order model มี UserName, ถ้าไม่มี ให้ Include User มา
+                            c.Item().Text($"ลูกค้า: {userName}");
+                        });
+                        row.RelativeColumn().Column(c =>
+                        {
+                            // ❗️❗️ แก้เป็น bill.Shop.Name
+                            c.Item().Text($"ร้านค้า: {bill.Shop?.Name ?? "N/A"}");
+                            // ❗️❗️ แก้เป็น bill.PlacedAt
+                            c.Item().Text($"วันที่: {bill.PlacedAt.ToString("yyyy-MM-dd HH:mm")}");
+                        });
+                    });
+
+                    // ตารางรายการสินค้า
+                    col.Item().Table(table =>
+                    {
+                        // กำหนดคอลัมน์
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn(3); // รายการ
+                            columns.RelativeColumn(1); // จำนวน
+                            columns.RelativeColumn(1); // ราคา
+                        });
+
+                        // หัวตาราง
+                        table.Header(header =>
+                        {
+                            header.Cell().Text("รายการ").Bold();
+                            header.Cell().AlignCenter().Text("จำนวน").Bold();
+                            header.Cell().AlignRight().Text("ราคา (บาท)").Bold();
+                        });
+
+                        // ข้อมูลสินค้า (วนลูป ❗️ แก้เป็น bill.OrderItems)
+                        foreach (var item in bill.OrderItems)
+                        {
+                            // ❗️❗️ แก้ไข Property
+                            table.Cell().Text(item.ItemName);
+                            table.Cell().AlignCenter().Text(item.Quantity.ToString());
+                            table.Cell().AlignRight().Text(item.LineTotal.ToString("N2")); // ❗️❗️ ใช้ LineTotal
+                        }
+                    });
+
+                    // 2.3 ยอดรวม (❗️ แก้เป็น bill.GrandTotal)
+                    col.Item().AlignRight().Text($"รวมทั้งหมด: {bill.GrandTotal.ToString("N2")} บาท")
+                        .Bold().FontSize(14);
+                });
+            });
+        });
+
+        // 3. สร้าง PDF เป็น byte[]
+        byte[] pdfBytes = document.GeneratePdf();
+
+        // 4. ส่งไฟล์กลับไปให้ User
+        return File(pdfBytes, "application/pdf", $"bill-{bill.OrderCode}.pdf");
+    }
 
 
 }
