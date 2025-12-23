@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace My_FoodApp.Models
 {
@@ -19,7 +20,11 @@ namespace My_FoodApp.Models
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public Shop? Shop { get; set; }
+
+        [ForeignKey("UserId")]
         public User? User { get; set; }
         public ICollection<OrderItem>? OrderItems { get; set; }
+        public List<Payment> Payments { get; set; } = new();
+        public string? SlipPath { get; set; }
     }
 }

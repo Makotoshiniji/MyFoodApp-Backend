@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using My_FoodApp.Data;
 
@@ -11,9 +12,11 @@ using My_FoodApp.Data;
 namespace My_FoodApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251221000824_AddOrderItemOptionTable")]
+    partial class AddOrderItemOptionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -388,10 +391,6 @@ namespace My_FoodApp.Migrations
                         .HasColumnType("decimal(65,30)")
                         .HasColumnName("base_cost");
 
-                    b.Property<string>("Category")
-                        .HasColumnType("longtext")
-                        .HasColumnName("category");
-
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int")
                         .HasColumnName("category_id");
@@ -403,10 +402,6 @@ namespace My_FoodApp.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext")
                         .HasColumnName("description");
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("longtext")
-                        .HasColumnName("image_path");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("tinyint(1)")
@@ -614,10 +609,6 @@ namespace My_FoodApp.Migrations
                         .HasColumnType("int")
                         .HasColumnName("shop_id");
 
-                    b.Property<string>("SlipPath")
-                        .HasColumnType("longtext")
-                        .HasColumnName("slip_path");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext")
@@ -738,10 +729,6 @@ namespace My_FoodApp.Migrations
                     b.Property<DateTime?>("SlipUploadedAt")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("slip_uploaded_at");
-
-                    b.Property<string>("SlipUrl")
-                        .HasColumnType("longtext")
-                        .HasColumnName("slip_url");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -1217,7 +1204,7 @@ namespace My_FoodApp.Migrations
             modelBuilder.Entity("My_FoodApp.Models.Payment", b =>
                 {
                     b.HasOne("My_FoodApp.Models.Order", "Order")
-                        .WithMany("Payments")
+                        .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -1318,8 +1305,6 @@ namespace My_FoodApp.Migrations
             modelBuilder.Entity("My_FoodApp.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
-
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("My_FoodApp.Models.OrderItem", b =>

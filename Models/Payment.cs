@@ -25,5 +25,6 @@ namespace My_FoodApp.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Order? Order { get; set; }
+        public string? SlipUrl { get; set; }
     }
 }

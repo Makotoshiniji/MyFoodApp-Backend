@@ -35,5 +35,8 @@ namespace My_FoodApp.Models
         public decimal UnitPrice { get; set; }
 
         public ICollection<CartItemOption> Options { get; set; } = new List<CartItemOption>();
+
+        [Column("special_request")]
+        public string? SpecialRequest { get; set; }
     }
 }
