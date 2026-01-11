@@ -151,10 +151,10 @@ namespace My_FoodApp.Controllers
             decimal discount = 0m;
             if (!string.IsNullOrWhiteSpace(req.VoucherCode) && req.VoucherCode.Equals("GRADANAJA", StringComparison.OrdinalIgnoreCase))
             {
-                discount = Math.Round(subtotal * 0.99m, 2);
+                discount = Math.Round(subtotal * 0.25m, 2);
             }
 
-            var vat = Math.Round(subtotal * 0.01m, 2);
+            var vat = Math.Round(subtotal * 0.07m, 2);
             var delivery = 0m;
             var grandTotal = subtotal + vat + delivery - discount;
 
@@ -249,56 +249,56 @@ namespace My_FoodApp.Controllers
             return Ok(new { message = "Status updated", status = order.Status });
         }
 
-        // ... (GetOrderById เหมือนเดิม) ...
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<OrderDetailDto>> GetOrderById(int id)
-        {
-            var order = await _db.Orders
-                .Include(o => o.User)
-                .Include(o => o.Shop)
-                .Include(o => o.OrderItems).ThenInclude(i => i.MenuItem)
-                .Include(o => o.OrderItems).ThenInclude(i => i.Options)
-                .Include(o => o.Payments)
-                .FirstOrDefaultAsync(o => o.Id == id);
+        //// ... (GetOrderById เหมือนเดิม) ...
+        //[HttpGet("{id:int}")]
+        //public async Task<ActionResult<OrderDetailDto>> GetOrderById(int id)
+        //{
+        //    var order = await _db.Orders
+        //        .Include(o => o.User)
+        //        .Include(o => o.Shop)
+        //        .Include(o => o.OrderItems).ThenInclude(i => i.MenuItem)
+        //        .Include(o => o.OrderItems).ThenInclude(i => i.Options)
+        //        .Include(o => o.Payments)
+        //        .FirstOrDefaultAsync(o => o.Id == id);
 
-            if (order == null) return NotFound();
+        //    if (order == null) return NotFound();
 
-            var payment = order.Payments?.OrderByDescending(p => p.Id).FirstOrDefault();
+        //    var payment = order.Payments?.OrderByDescending(p => p.Id).FirstOrDefault();
 
-            var dto = new OrderDetailDto
-            {
-                Id = order.Id,
-                OrderCode = !string.IsNullOrEmpty(order.OrderCode) ? order.OrderCode : order.Id.ToString("D6"),
-                CustomerName = order.User?.Username ?? "ลูกค้าทั่วไป",
-                ShopName = order.Shop?.Name ?? "Unknown Shop",
-                GrandTotal = order.GrandTotal,
-                Status = order.Status,
-                PlacedAt = order.PlacedAt,
-                Notes = order.Notes,
-                SlipUrl = order.SlipPath,
+        //    var dto = new OrderDetailDto
+        //    {
+        //        Id = order.Id,
+        //        OrderCode = !string.IsNullOrEmpty(order.OrderCode) ? order.OrderCode : order.Id.ToString("D6"),
+        //        CustomerName = order.User?.Username ?? "ลูกค้าทั่วไป",
+        //        ShopName = order.Shop?.Name ?? "Unknown Shop",
+        //        GrandTotal = order.GrandTotal,
+        //        Status = order.Status,
+        //        PlacedAt = order.PlacedAt,
+        //        Notes = order.Notes,
+        //        SlipUrl = order.SlipPath,
 
-                Items = order.OrderItems.Select(i => new OrderDetailItemDto
-                {
-                    Id = i.Id,
-                    MenuItemName = i.MenuItem != null ? i.MenuItem.Name : (i.ItemName ?? "Unknown Item"),
-                    Quantity = i.Quantity,
-                    Price = i.UnitPrice,
-                    Notes = i.SpecialRequest,
+        //        Items = order.OrderItems.Select(i => new OrderDetailItemDto
+        //        {
+        //            Id = i.Id,
+        //            MenuItemName = i.MenuItem != null ? i.MenuItem.Name : (i.ItemName ?? "Unknown Item"),
+        //            Quantity = i.Quantity,
+        //            Price = i.UnitPrice,
+        //            Notes = i.SpecialRequest,
 
-                    // ✅ ใส่ Default ไว้ก่อนเหมือนกัน
-                    ImagePath = null,
-                    Category = "Food",
+        //            // ✅ ใส่ Default ไว้ก่อนเหมือนกัน
+        //            ImagePath = null,
+        //            Category = "Food",
 
-                    Options = i.Options.Select(o => new OrderDetailOptionDto
-                    {
-                        OptionName = o.OptionName,
-                        ExtraPrice = o.ExtraPrice
-                    }).ToList()
-                }).ToList()
-            };
+        //            Options = i.Options.Select(o => new OrderDetailOptionDto
+        //            {
+        //                OptionName = o.OptionName,
+        //                ExtraPrice = o.ExtraPrice
+        //            }).ToList()
+        //        }).ToList()
+        //    };
 
-            return Ok(dto);
-        }
+        //    return Ok(dto);
+        //}
 
         // ... (UploadSlip เหมือนเดิม) ...
         [HttpPost("{id}/slip")]
@@ -327,6 +327,133 @@ namespace My_FoodApp.Controllers
             await _db.SaveChangesAsync();
 
             return Ok(new { message = "Upload successful", slipPath = dbPath });
+        }
+        // GET: api/Orders/user/5
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetOrdersByUser(int userId)
+        {
+            var orders = await _db.Orders
+                .AsNoTracking()
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.PlacedAt) // เรียงจากล่าสุดไปเก่าสุด
+                .Select(o => new
+                {
+                    id = o.Id,
+                    orderCode = o.OrderCode,
+                    totalAmount = o.GrandTotal,
+                    status = o.Status,
+                    // แปลงวันที่เป็น string ให้สวยงาม หรือส่งไปเป็น DateTime ก็ได้
+                    date = o.PlacedAt.ToString("dd/MM/yyyy HH:mm")
+                })
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+        // GET: api/Orders/{id}
+        // สำหรับหน้าใบเสร็จ (NewBillDetailScreen)
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult> GetOrderDetail(int id)
+        //{
+        //    var order = await _db.Orders
+        //        .Include(o => o.Shop)           // 1. Join เพื่อเอาชื่อร้าน
+        //        .Include(o => o.User)
+        //        .Include(o => o.OrderItems)     // 2. Join เอารายการอาหาร
+        //            .ThenInclude(oi => oi.MenuItem) // 3. Join เอาชื่ออาหาร
+        //        .AsNoTracking()
+        //        .FirstOrDefaultAsync(o => o.Id == id);
+
+        //    if (order == null) return NotFound();
+
+        //    // 4. แปลงข้อมูลให้ตรงกับที่หน้า Frontend (NewBillDetailScreen) ต้องการ
+        //    var result = new
+        //    {
+        //        id = order.Id,
+        //        customerName = order.User?.Username ?? "Unknown",
+        //        shopName = order.Shop?.Name ?? "Unknown Shop", // ส่งชื่อร้าน
+        //        placedAt = order.PlacedAt,
+        //        grandTotal = order.GrandTotal,
+        //        status = order.Status,
+        //        notes = order.Notes,
+
+        //        // แปลง OrderItems -> items (ตัวเล็ก)
+        //        items = order.OrderItems.Select(oi => new
+        //        {
+        //            quantity = oi.Quantity,
+        //            menuItemName = oi.MenuItem?.Name ?? "Unknown Item", // ส่งชื่อเมนู
+        //            price = oi.UnitPrice,
+
+        //            // (Optional) ถ้ามีตาราง OrderItemOptions ก็ต้อง Join มาใส่ตรงนี้
+        //            // ตอนนี้ใส่เป็น list ว่างๆ ไปก่อนเพื่อไม่ให้ error
+        //            options = new List<object>()
+        //        })
+        //    };
+
+        //    return Ok(result);
+        //}
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetOrderDetail(int id)
+        {
+            var order = await _db.Orders
+                .Include(o => o.Shop)
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.OrderItems) // ✅ 1. เพิ่มการ Join เพื่อดึง Options ของรายการอาหาร
+                    .ThenInclude(oi => oi.Options)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return NotFound();
+
+            var result = new
+            {
+                id = order.Id,
+                orderCode = order.OrderCode, // ✅ เพิ่มเพื่อให้แสดงผลได้ตาม Interface
+                customerName = order.User?.Username ?? "Unknown",
+                shopName = order.Shop?.Name ?? "Unknown Shop",
+                placedAt = order.PlacedAt,
+                grandTotal = order.GrandTotal,
+                status = order.Status,
+                notes = order.Notes, // ✅ โน้ตของออเดอร์ (รวม)
+                slipUrl = order.SlipPath,
+
+                items = order.OrderItems.Select(oi => new
+                {
+                    id = oi.Id,
+                    menuItemName = oi.MenuItem?.Name ?? "Unknown Item",
+                    quantity = oi.Quantity,
+                    price = oi.UnitPrice,
+                    // ✅ 2. แก้ไข: ส่งโน้ตของแต่ละเมนู (เช่น ไม่เผ็ด, ไม่ผัก)
+                    notes = oi.SpecialRequest,
+                    // ✅ 3. แก้ไข: ส่งรายการตัวเลือกเสริมที่ลูกค้าเลือก
+                    options = oi.Options.Select(opt => new {
+                        optionName = opt.OptionName,
+                        extraPrice = opt.ExtraPrice
+                    }).ToList()
+                })
+            };
+
+            return Ok(result);
+        }
+        // DTO สำหรับรับข้อมูลการสั่งซื้อจากหน้าบ้าน
+        public class CreateOrderRequest
+        {
+            public int UserId { get; set; }
+            public int ShopId { get; set; }
+            public string? VoucherCode { get; set; }
+            public string? Notes { get; set; }
+            // เพิ่มส่วนนี้เพื่อรองรับการส่งรายการอาหารโดยตรงจากตะกร้า
+            public List<CreateOrderItemRequest>? Items { get; set; }
+        }
+
+        public class CreateOrderItemRequest
+        {
+            public int MenuItemId { get; set; }
+            public string? ItemName { get; set; }
+            public decimal UnitPrice { get; set; }
+            public int Quantity { get; set; }
         }
     }
 }

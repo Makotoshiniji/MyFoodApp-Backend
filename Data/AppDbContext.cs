@@ -23,7 +23,7 @@ namespace My_FoodApp.Data
         public DbSet<Coupon> Coupons { get; set; }
 
         // --- ตาราง Custom Option ---
-        public DbSet<MenuOptionGroup> MenuOptionGroups { get; set; }
+        //public DbSet<MenuOptionGroup> MenuOptionGroups { get; set; }
         public DbSet<MenuItemOptionGroup> MenuItemOptionGroups { get; set; } // 🟢 แก้ชื่อ DbSet ให้สื่อความหมาย
         public DbSet<MenuOption> MenuOptions { get; set; }
 
@@ -77,7 +77,7 @@ namespace My_FoodApp.Data
             modelBuilder.Entity<MenuItemOptionGroup>(e =>
             {
                 e.Property(x => x.MenuItemId).HasColumnName("menu_item_id");
-                e.Property(x => x.GroupId).HasColumnName("group_id");
+                //e.Property(x => x.GroupId).HasColumnName("group_id");
                 e.Property(x => x.Name).HasColumnName("name").HasMaxLength(200);
                 e.Property(x => x.IsRequired).HasColumnName("is_required");
                 e.Property(x => x.MinSelection).HasColumnName("min_selection");
@@ -100,6 +100,13 @@ namespace My_FoodApp.Data
 
                 e.Property(x => x.IsDefault).HasColumnName("is_default");
                 e.Property(x => x.SortOrder).HasColumnName("sort_order");
+                // ========================================================
+                // ✅ เพิ่มชุดนี้เข้าไปครับ เพื่อบังคับให้มันรู้จัก group_id
+                // ========================================================
+                e.HasOne(o => o.Group)          // MenuOption เชื่อมกับ 1 Group
+                     .WithMany(g => g.Options)      // Group มีหลาย Options
+                     .HasForeignKey(o => o.GroupId) // บังคับใช้คอลัมน์ "group_id" เป็นตัวเชื่อม
+                     .OnDelete(DeleteBehavior.Cascade);
             });
 
             // 4. CartItemOption

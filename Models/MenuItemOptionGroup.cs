@@ -14,7 +14,7 @@ public class MenuItemOptionGroup
     public MenuItem? MenuItem { get; set; }
 
     // FK ไปยังกลุ่ม option (ใช้คู่กับ MenuOption.GroupId)
-    public int GroupId { get; set; }
+    //public int GroupId { get; set; }
 
     [MaxLength(200)]
     public string Name { get; set; } = string.Empty;
